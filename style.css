@@ -130,7 +130,7 @@ display: inline-block;
 
 /* Activated dodge mode */
 .no-btn.escape {
-    position: fixed;           /* now free to move on screen */
+    position: fixed;           /* can jump anywhere on screen */
     z-index: 9999;
     cursor: not-allowed;
 }
