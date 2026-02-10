@@ -9,64 +9,89 @@ const catImg = document.getElementById("letter-cat");
 const buttons = document.getElementById("letter-buttons");
 const finalText = document.getElementById("final-text");
 
-// Click Envelope
-
+// -----------------------------
+// Open Envelope
+// -----------------------------
 envelope.addEventListener("click", () => {
-    envelope.style.display = "none";
-    letter.style.display = "flex";
+  envelope.style.display = "none";
+  letter.style.display = "flex";
 
-    setTimeout( () => {
-        document.querySelector(".letter-window").classList.add("open");
-    },50);
+  setTimeout(() => {
+    document.querySelector(".letter-window").classList.add("open");
+    moveNoButton(); // move once when it appears
+  }, 50);
 });
 
-// Logic to move the NO btn
+// -----------------------------
+// NO button: move anywhere on full screen
+// -----------------------------
+function moveNoButton() {
+  const padding = 20;
 
-noBtn.addEventListener("mouseover", () => {
-    const min = 200;
-    const max = 200;
+  // Force layout update to get correct size
+  const rect = noBtn.getBoundingClientRect();
 
-    const distance = Math.random() * (max - min) + min;
-    const angle = Math.random() * Math.PI * 2;
+  const maxX = window.innerWidth - rect.width - padding;
+  const maxY = window.innerHeight - rect.height - padding;
 
-    const moveX = Math.cos(angle) * distance;
-    const moveY = Math.sin(angle) * distance;
+  // Prevent negative values on tiny screens
+  const x = Math.max(padding, Math.random() * Math.max(maxX, padding));
+  const y = Math.max(padding, Math.random() * Math.max(maxY, padding));
 
-    noBtn.style.transition = "transform 0.3s ease";
-    noBtn.style.transform = `translate(${moveX}px, ${moveY}px)`;
+  noBtn.style.left = `${x}px`;
+  noBtn.style.top = `${y}px`;
+}
+
+// Make it dodge whenever you get close (desktop + mobile)
+function handlePointerMove(e) {
+  const r = noBtn.getBoundingClientRect();
+  const cx = r.left + r.width / 2;
+  const cy = r.top + r.height / 2;
+
+  const px = e.clientX ?? (e.touches && e.touches[0]?.clientX);
+  const py = e.clientY ?? (e.touches && e.touches[0]?.clientY);
+
+  if (px == null || py == null) return;
+
+  const dx = px - cx;
+  const dy = py - cy;
+  const dist = Math.hypot(dx, dy);
+
+  // If pointer gets close, move it
+  if (dist < 140) moveNoButton();
+}
+
+// Extra: also move immediately if it’s hovered/entered
+noBtn.addEventListener("mouseenter", moveNoButton);
+noBtn.addEventListener("pointerenter", moveNoButton);
+
+// Prevent any click from doing anything (just in case)
+noBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  moveNoButton();
 });
 
-// Logic to make YES btn to grow
+// Track pointer/finger movement
+document.addEventListener("mousemove", handlePointerMove, { passive: true });
+document.addEventListener("touchmove", handlePointerMove, { passive: true });
+document.addEventListener("pointermove", handlePointerMove, { passive: true });
 
-// let yesScale = 1;
+// If user resizes the screen, keep it in-bounds
+window.addEventListener("resize", moveNoButton);
 
-// yesBtn.style.position = "relative"
-// yesBtn.style.transformOrigin = "center center";
-// yesBtn.style.transition = "transform 0.3s ease";
-
-// noBtn.addEventListener("click", () => {
-//     yesScale += 2;
-
-//     if (yesBtn.style.position !== "fixed") {
-//         yesBtn.style.position = "fixed";
-//         yesBtn.style.top = "50%";
-//         yesBtn.style.left = "50%";
-//         yesBtn.style.transform = `translate(-50%, -50%) scale(${yesScale})`;
-//     }else{
-//         yesBtn.style.transform = `translate(-50%, -50%) scale(${yesScale})`;
-//     }
-// });
-
+// -----------------------------
 // YES is clicked
-
+// -----------------------------
 yesBtn.addEventListener("click", () => {
-    title.textContent = "Yippeeee!";
+  title.textContent = "Yippeeee!";
+  catImg.src = "cat_dance.gif";
 
-    catImg.src = "cat_dance.gif";
+  document.querySelector(".letter-window").classList.add("final");
+  buttons.style.display = "none";
 
-    document.querySelector(".letter-window").classList.add("final");
-
-    buttons.style.display = "none";
-
-    finalText.style.display = "block";
+  // Updated final text
+  finalText.innerHTML =
+    "<strong>Important:</strong> You need to leave your house this friday until 18, dress casual";
+  finalText.style.display = "block";
 });
