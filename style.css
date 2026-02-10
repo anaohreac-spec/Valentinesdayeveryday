@@ -122,11 +122,15 @@ display: inline-block;
 }
 
 .no-btn {
-    z-index: 1;
-    position: relative;
-    transition: transform 0.15s ease;
-    cursor: default;
+    z-index: 9999;
+    position: fixed;     /* FULL SCREEN positioning */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: left 0.15s ease, top 0.15s ease;
+    cursor: not-allowed;
 }
+
 
 .final-text{
     font-size: 22px;
