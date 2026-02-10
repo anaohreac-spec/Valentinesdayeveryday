@@ -103,6 +103,6 @@ yesBtn.addEventListener("click", () => {
   buttons.style.display = "none";
 
   finalText.innerHTML =
-    "<strong>Important:</strong> You need to leave your house this friday until 18, dress casual";
+    "<strong>Important:</strong>You need to leave your house this friday from 17 until 20, dress casual!!";
   finalText.style.display = "block";
 });
